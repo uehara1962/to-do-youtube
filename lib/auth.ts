@@ -4,6 +4,9 @@ import { db } from "@/db/drizzle";
 import * as schema from "@/db/drizzle/schema";
 import { nextCookies } from "better-auth/next-js";
 
+const baseUrl = process.env.BETTER_AUTH_URL || 
+                (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
@@ -19,7 +22,7 @@ export const auth = betterAuth({
     requireEmailVerification: false, // Mude para true em produção
   },
   secret: process.env.BETTER_AUTH_SECRET!,
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  baseURL: baseUrl,
   basePath: "/api/auth",
   // Configuração de Cookies
   session: {
@@ -37,7 +40,7 @@ export const auth = betterAuth({
     },
   },
   trustedOrigins: [
-    process.env.BETTER_AUTH_URL || "http://localhost:3000",
+    baseUrl,
     // Adicione outros domínios confiáveis aqui
   ],
   plugins: [nextCookies()],
