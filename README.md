@@ -1,5 +1,49 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Database Setup (Neon + Drizzle ORM)
+
+This project uses [Neon](https://neon.tech) as the PostgreSQL database and [Drizzle ORM](https://orm.drizzle.team) for database management.
+
+### Database Configuration
+
+- **Project**: `to-do-crud` (ID: `super-bar-25570767`)
+- **Database**: `neondb`
+- **Connection**: Configured in `.env.local`
+
+### Database Scripts
+
+```bash
+# Push schema changes to database (development)
+npm run db:push
+
+# Generate migration files
+npm run db:generate
+
+# Run migrations
+npm run db:migrate
+
+# Open Drizzle Studio (database GUI)
+npm run db:studio
+```
+
+### Database Schema
+
+The project includes a `todos` table with the following structure:
+
+- `id` (serial, primary key)
+- `title` (text, required)
+- `description` (text, optional)
+- `completed` (boolean, default: false)
+- `created_at` (timestamp)
+- `updated_at` (timestamp)
+
+### API Routes
+
+Example API route available at `/api/todos`:
+
+- `GET /api/todos` - Fetch all todos
+- `POST /api/todos` - Create a new todo
+
 ## Getting Started
 
 First, run the development server:
