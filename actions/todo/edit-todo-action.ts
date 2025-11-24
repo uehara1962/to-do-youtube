@@ -12,7 +12,7 @@ export async function editTodoAction(formData: FormData): Promise<void> {
   const description = formData.get("description");
   const userId = formData.get("userId");
 
-console.log("editTodoAction", "id", id, "title", title, "description", description);
+console.log("editTodoAction", "id", id, "title", title, "description", description, "userId", userId);
 
   const updatedTodo: TodoTableInsertModel = {
     id: id as string,

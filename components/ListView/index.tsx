@@ -34,6 +34,7 @@ export default function ListView({ todo }: { todo: TodoTableSelectModel }) {
                 <form action={editTodoAction}>
                   <div className="grid gap-4">
                     <div className="grid gap-2">
+                      <Input type="hidden" id="userId" name="userId" defaultValue={todo.userId} />
                       <Label htmlFor="title">Title</Label>
                       <Input
                         type="hidden"
