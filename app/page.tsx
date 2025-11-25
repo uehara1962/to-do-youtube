@@ -6,6 +6,7 @@ import ToDoListTable from "@/components/ToDoListTable";
 import LogoutButton from "@/components/LogoutButton";
 import { getCurrentUser } from "@/lib/auth-server";
 import { redirect } from "next/navigation";
+import { trackServerEvent } from "@/lib/mixpanel";
 
 export default async function Home() {
   const user = await getCurrentUser();
@@ -14,6 +15,10 @@ export default async function Home() {
   if (!user) {
     redirect("/login");
   }
+
+  trackServerEvent("home_page_viewed", {
+    page: "home",
+  });
 
   return (
     <Suspense fallback={<Spinner className={clsx("min-h-[200px]")} />}>

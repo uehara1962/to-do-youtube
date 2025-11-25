@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { getCurrentUser } from "@/lib/auth-server";
 import { redirect } from "next/navigation";
+import { trackServerEvent } from "@/lib/mixpanel";
 
 export default async function TodoPage() {
   // Verificar autenticação antes de renderizar
@@ -13,6 +14,10 @@ export default async function TodoPage() {
   if (!user) {
     redirect("/login");
   }
+
+  trackServerEvent("todo_page_viewed", {
+    page: "todo",
+  });
 
   return (
     <Suspense fallback={<Spinner className={clsx("min-h-[200px]")} />}>

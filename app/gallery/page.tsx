@@ -2,6 +2,7 @@ import { listImagesAction } from "@/actions/cloudinary/list-images-action";
 import { Gallery } from "@/components/Gallery";
 import { Suspense } from "react";
 import { Spinner } from "@/components/ui/spinner";
+import { trackServerEvent } from "@/lib/mixpanel";
 
 export const metadata = {
   title: "Galeria de Imagens - Home",
@@ -10,6 +11,10 @@ export const metadata = {
 
 async function GalleryContent() {
   const result = await listImagesAction("todos", 100);
+  
+  trackServerEvent("gallery_page_viewed", {
+    page: "gallery",
+  });
 
   if ("error" in result) {
     return (
