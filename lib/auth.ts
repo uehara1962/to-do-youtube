@@ -3,9 +3,13 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db/drizzle";
 import * as schema from "@/db/drizzle/schema";
 import { nextCookies } from "better-auth/next-js";
+import { sendResetPasswordEmail } from "./email";
 
-const baseUrl = process.env.BETTER_AUTH_URL || 
-                (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+const baseUrl =
+  process.env.BETTER_AUTH_URL ||
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000");
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -20,6 +24,9 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false, // Mude para true em produção
+    async sendResetPassword({ user, url }) {
+      await sendResetPasswordEmail(user.email, url);
+    },
   },
   secret: process.env.BETTER_AUTH_SECRET!,
   baseURL: baseUrl,

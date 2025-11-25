@@ -15,7 +15,7 @@ export async function sendResetPasswordEmail(email: string, url: string) {
   // In production, verify you have an email provider configured
   // Example with Resend:
   await resend.emails.send({
-    from: "noreply@yourdomain.com",
+    from: "noreply@carlosuehara.com.br",
     to: email,
     subject: "Reset your password",
     html: `<a href="${url}">Click here to reset your password</a>`
