@@ -1,5 +1,10 @@
 import { createAuthClient } from "better-auth/react";
 
+console.log("typeof window", typeof window !== "undefined");
+console.log("window.location.origin", typeof window !== "undefined" ? window.location.origin : "undefined");
+console.log("process.env.NEXT_PUBLIC_BETTER_AUTH_URL", process.env.NEXT_PUBLIC_BETTER_AUTH_URL);
+console.log("process.env.NEXT_PUBLIC_VERCEL_URL", process.env.NEXT_PUBLIC_VERCEL_URL);
+
 // Get base URL for client-side
 // In production, use NEXT_PUBLIC_BETTER_AUTH_URL or detect from window.location
 // In development, use localhost
@@ -13,6 +18,7 @@ const getBaseUrl = () => {
   if (typeof window !== "undefined") {
     return window.location.origin;
   }
+
   
   // Fallback for SSR (shouldn't happen often, but safe fallback)
   return process.env.NEXT_PUBLIC_VERCEL_URL
