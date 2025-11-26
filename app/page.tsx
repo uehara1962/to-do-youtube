@@ -7,6 +7,16 @@ import LogoutButton from "@/components/LogoutButton";
 import { getCurrentUser } from "@/lib/auth-server";
 import { redirect } from "next/navigation";
 import { trackServerEvent } from "@/lib/mixpanel";
+import { Metadata } from "next";
+import { getSeoTags } from "@/lib/seo";
+
+export const metadata: Metadata = getSeoTags({
+  appName: "Home | To Do List",
+  AppDescription: "Home page of the To Do List app",
+  Keywords: ["to do list", "todo list", "todo"],
+  appDomain: "https://www.carlosuehara.com.br",
+  canonicalUrlRelative: "/",
+});
 
 export default async function Home() {
   const user = await getCurrentUser();
@@ -18,6 +28,8 @@ export default async function Home() {
 
   trackServerEvent("home_page_viewed", {
     page: "home",
+    user_id: user.id,
+    user_email: user.email,
   });
 
   return (

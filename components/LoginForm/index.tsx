@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function LoginForm() {
   const initialState: LoginActionState = {
@@ -30,7 +31,7 @@ export default function LoginForm() {
   return (
     <form
       action={formAction}
-      className="w-full max-w-md space-y-4"
+      className="w-full space-y-4"
       suppressHydrationWarning
     >
       {state?.error && (
@@ -65,6 +66,9 @@ export default function LoginForm() {
         />
       </div>
 
+      <div className="flex justify-start mb-4">
+        <Link href="/forgot-password">Esqueceu sua senha?</Link>
+      </div>
       <Button type="submit" disabled={pending} suppressHydrationWarning>
         {pending ? "Entrando..." : "Entrar"}
       </Button>

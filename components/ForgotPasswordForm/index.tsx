@@ -23,8 +23,9 @@ export function ForgotPasswordForm() {
   };
 
   return (
-    <form action={handleSubmit} className="w-full max-w-md space-y-4">
-      <div className="space-y-2">
+    <form action={handleSubmit} className="w-full max-w-md space-y-6">
+      <h1 className="text-2xl font-bold text-center mb-4">Esqueceu sua senha?</h1>
+      <div className="space-y-4">
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"

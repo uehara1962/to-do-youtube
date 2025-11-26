@@ -6,6 +6,12 @@ import { Spinner } from "@/components/ui/spinner";
 import { getCurrentUser } from "@/lib/auth-server";
 import { redirect } from "next/navigation";
 import { trackServerEvent } from "@/lib/mixpanel";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "To Do List",
+  description: "To Do List page",
+};
 
 export default async function TodoPage() {
   // Verificar autenticação antes de renderizar

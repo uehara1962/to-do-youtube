@@ -1,27 +1,40 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useSession } from "@/lib/auth-client";
+import { logoutAction } from "@/actions/auth/logout-action";
 
 export const Header = () => {
   const pathname = usePathname();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { data: session, isPending } = useSession();
 
-  const menuItems = [
+  // Base menu items
+  const baseMenuItems = [
     { href: "/", label: "Home" },
     { href: "/todo", label: "Todo" },
     { href: "/gallery", label: "Galeria" },
-    { href: "/login", label: "Login" },
-    { href: "/logout", label: "Logout" },
-    { href: "/signup", label: "Signup" },
     { href: "/dashboard", label: "Dashboard" },
     { href: "/cloudinary", label: "Cloudinary" },
     { href: "/blog/newBlog", label: "New Blog" },
   ];
 
-  const currentItem = menuItems.find(item => pathname === item.href);
+  // Add auth-related items based on session status
+  const menuItems = [
+    ...baseMenuItems,
+    // Show Login/Signup only when NOT logged in
+    ...(!isPending && !session
+      ? [
+          { href: "/login", label: "Login" },
+          { href: "/signup", label: "Signup" },
+        ]
+      : []),
+  ];
+
+  const currentItem = menuItems.find((item) => pathname === item.href);
 
   return (
     <header className="w-full flex items-center justify-between py-2">
@@ -36,7 +49,7 @@ export const Header = () => {
             "md:text-4xl/normal",
             "lg:py-5",
             "lg:text-5xl/normal",
-            "text-amber-500",
+            "text-amber-500"
           )}
         >
           The blog
@@ -84,7 +97,12 @@ export const Header = () => {
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
 
@@ -96,7 +114,7 @@ export const Header = () => {
               className="fixed inset-0 z-10"
               onClick={() => setIsDropdownOpen(false)}
             />
-            
+
             {/* Menu Dropdown */}
             <div
               className={clsx(
@@ -119,12 +137,33 @@ export const Header = () => {
                     "text-blue-400",
                     "hover:bg-gray-700",
                     "transition-colors",
-                    pathname === item.href && "bg-gray-700 text-emerald-500 font-bold"
+                    pathname === item.href &&
+                      "bg-gray-700 text-emerald-500 font-bold"
                   )}
                 >
                   {item.label}
                 </Link>
               ))}
+              {/* Logout option - only shown when user is logged in */}
+              {!isPending && session && (
+                <form
+                  action={logoutAction}
+                  className="border-t border-gray-700"
+                >
+                  <button
+                    type="submit"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className={clsx(
+                      "w-full text-left px-4 py-2",
+                      "text-red-400",
+                      "hover:bg-gray-700",
+                      "transition-colors"
+                    )}
+                  >
+                    Sair
+                  </button>
+                </form>
+              )}
             </div>
           </>
         )}
@@ -228,7 +267,7 @@ export const Header = () => {
 //               className="fixed inset-0 z-10"
 //               onClick={() => setIsDropdownOpen(false)}
 //             />
-            
+
 //             {/* Menu Dropdown */}
 //             <div
 //               className={clsx(

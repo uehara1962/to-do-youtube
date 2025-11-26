@@ -29,8 +29,6 @@ export async function logoutAction() {
   }
 }
 
-
-
 // -------------------------
 
 // "use server";
@@ -42,7 +40,7 @@ export async function logoutAction() {
 // export async function logoutAction() {
 //   await asyncDelay(5000);
 //   return { success: "Logout realizado com sucesso" };
-  
+
 //   try {
 //     // await auth.api.signOut({
 //     //   headers: await import("next/headers").then((h) => h.headers()),
