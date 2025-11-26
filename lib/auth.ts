@@ -7,11 +7,6 @@ import { sendResetPasswordEmail } from "./email";
 
 // Get base URL for server-side
 // Priority: BETTER_AUTH_URL > VERCEL_URL > localhost
-
-console.log("process.env.BETTER_AUTH_URL - auth.ts", process.env.BETTER_AUTH_URL);
-console.log("process.env.VERCEL_URL - auth.ts", process.env.VERCEL_URL);
-console.log("process.env.NEXT_PUBLIC_BETTER_AUTH_URL - auth.ts", process.env.NEXT_PUBLIC_BETTER_AUTH_URL);
-console.log("process.env.NEXT_PUBLIC_VERCEL_URL - auth.ts", process.env.NEXT_PUBLIC_VERCEL_URL);
 const baseUrl =
   process.env.BETTER_AUTH_URL ||
   (process.env.VERCEL_URL

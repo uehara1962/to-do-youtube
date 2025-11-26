@@ -11,21 +11,14 @@ export function proxy(request: NextRequest) {
     request.nextUrl.pathname.startsWith(route)
   );
 
-  // Rotas públicas
-  const publicRoutes = ["/login", "/signup"];
-  const isPublicRoute = publicRoutes.some((route) =>
-    request.nextUrl.pathname.startsWith(route)
-  );
-
   // Redirecionar se não autenticado em rota protegida
   if (isProtectedRoute && !sessionCookie) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Redirecionar se autenticado em rota pública
-  if (isPublicRoute && sessionCookie) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
+  // REMOVIDO: Redirecionamento automático de rotas públicas quando autenticado
+  // Isso estava causando loops de redirecionamento
+  // As páginas individuais podem fazer essa verificação se necessário
 
   return NextResponse.next();
 }
