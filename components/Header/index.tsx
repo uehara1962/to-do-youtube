@@ -12,6 +12,9 @@ export const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { data: session, isPending } = useSession();
 
+  console.log("session", session);
+  console.log("isPending", isPending);
+
   // Base menu items
   const baseMenuItems = [
     { href: "/", label: "Home" },

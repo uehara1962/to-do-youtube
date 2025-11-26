@@ -5,11 +5,13 @@ import * as schema from "@/db/drizzle/schema";
 import { nextCookies } from "better-auth/next-js";
 import { sendResetPasswordEmail } from "./email";
 
+// Get base URL for server-side
+// Priority: BETTER_AUTH_URL > VERCEL_URL > localhost
 const baseUrl =
   process.env.BETTER_AUTH_URL ||
   (process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000");
+    : process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000");
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -48,6 +50,8 @@ export const auth = betterAuth({
   },
   trustedOrigins: [
     baseUrl,
+    "https://www.carlosuehara.com.br",
+    "https://carlosuehara.com.br",
     // Adicione outros domínios confiáveis aqui
   ],
   plugins: [nextCookies()],
