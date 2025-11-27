@@ -3,7 +3,7 @@
 import Link from "next/link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useSession } from "@/lib/auth-client";
 import { logoutAction } from "@/actions/auth/logout-action";
 
@@ -11,6 +11,7 @@ export const Header = () => {
   const pathname = usePathname();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { data: session, isPending } = useSession();
+  const [isPendingLogout, startTransition] = useTransition();
 
   console.log("session", session);
   console.log("isPending", isPending);
@@ -149,23 +150,27 @@ export const Header = () => {
               ))}
               {/* Logout option - only shown when user is logged in */}
               {!isPending && session && (
-                <form
-                  action={logoutAction}
-                  className="border-t border-gray-700"
-                >
+                <div className="border-t border-gray-700">
                   <button
-                    type="submit"
-                    onClick={() => setIsDropdownOpen(false)}
+                    type="button"
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      startTransition(async () => {
+                        await logoutAction();
+                      });
+                    }}
+                    disabled={isPendingLogout}
                     className={clsx(
                       "w-full text-left px-4 py-2",
                       "text-red-400",
                       "hover:bg-gray-700",
-                      "transition-colors"
+                      "transition-colors",
+                      isPendingLogout && "opacity-50 cursor-not-allowed"
                     )}
                   >
-                    Sair
+                    {isPendingLogout ? "Saindo..." : "Sair"}
                   </button>
-                </form>
+                </div>
               )}
             </div>
           </>
