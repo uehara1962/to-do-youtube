@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import { Container } from "@/components/Container";
 import { Header } from "@/components/Header";
 import { Toaster } from "@/components/ui/sonner";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,6 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className="dark" suppressHydrationWarning={true}>
+      <GoogleTagManager gtmId="G-E58B0E1ZYW"   />
       <body className={clsx("antialiased")}>
         <Container>
           <Header />
