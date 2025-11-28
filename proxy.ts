@@ -7,7 +7,7 @@ export function proxy(request: NextRequest) {
   console.log("sessionCookie:", sessionCookie);
 
   // Rotas protegidas
-  const protectedRoutes = ["/dashboard", "/profile", "/learn"];
+  const protectedRoutes = ["/dashboard", "/profile"];
   const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
