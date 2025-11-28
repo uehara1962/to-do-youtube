@@ -7,6 +7,12 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import clsx from "clsx";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Aprender Inglês",
+  description: "Aprender Inglês page",
+};
 
 export default async function LearnPage() {
   const user = await getCurrentUser();

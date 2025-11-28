@@ -7,6 +7,12 @@ import { redirect, notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getExercisesByLessonId } from "@/server/exercises";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Aprender Inglês",
+  description: "Aprender Inglês page",
+};
 
 interface LessonPageProps {
   params: Promise<{ lessonId: string }>;

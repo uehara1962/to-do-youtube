@@ -1,6 +1,13 @@
 // app/dashboard/page.tsx
 import { getCurrentUser } from "@/lib/auth-server";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Dashboard page",
+};
+
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
