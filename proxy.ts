@@ -6,7 +6,7 @@ export function proxy(request: NextRequest) {
   const sessionCookie = request.cookies.get("better-auth.session_token");
 
   // Rotas protegidas
-  const protectedRoutes = ["/dashboard", "/profile"];
+  const protectedRoutes = ["/dashboard", "/profile", "/learn"];
   const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );

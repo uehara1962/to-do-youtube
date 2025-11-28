@@ -8,6 +8,13 @@
       "when": 1763405211346,
       "tag": "0000_far_black_crow",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1764205587137,
+      "tag": "0001_slimy_pestilence",
+      "breakpoints": true
     }
   ]
 }

@@ -19,6 +19,7 @@ export const Header = () => {
   // Base menu items
   const baseMenuItems = [
     { href: "/", label: "Home" },
+    { href: "/learn", label: "Aprender" },
     { href: "/todo", label: "Todo" },
     { href: "/gallery", label: "Galeria" },
     { href: "/dashboard", label: "Dashboard" },

@@ -1,4 +1,13 @@
-import { pgTable, text, timestamp, boolean, uuid } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  uuid,
+  integer,
+  jsonb,
+} from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 // Tabela de usuários (pode manter a sua ou adaptar)
 export const users = pgTable("user", {
@@ -85,7 +94,127 @@ export const todos = pgTable("todos", {
     .references(() => users.id, { onDelete: "cascade" }),
 });
 
+// Tabela de lições de inglês
+export const lessons = pgTable("lessons", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: text("title").notNull(),
+  description: text("description"),
+  level: integer("level").notNull().default(1),
+  order: integer("order").notNull().default(0),
+  section: text("section").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+// Tabela de exercícios
+export const exercises = pgTable("exercises", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  lessonId: uuid("lesson_id")
+    .notNull()
+    .references(() => lessons.id, { onDelete: "cascade" }),
+  type: text("type").notNull(), // "multiple_choice", "translation", "fill_blank", "listening", "speaking"
+  question: text("question").notNull(),
+  correctAnswer: text("correct_answer").notNull(),
+  options: jsonb("options"), // Array de opções para múltipla escolha
+  audioUrl: text("audio_url"),
+  order: integer("order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+// Tabela de progresso do usuário
+export const userProgress = pgTable("user_progress", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  lessonId: uuid("lesson_id")
+    .notNull()
+    .references(() => lessons.id, { onDelete: "cascade" }),
+  completed: boolean("completed").default(false).notNull(),
+  score: integer("score").default(0).notNull(),
+  attempts: integer("attempts").default(0).notNull(),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+// Tabela de respostas dos usuários
+export const userAnswers = pgTable("user_answers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  exerciseId: uuid("exercise_id")
+    .notNull()
+    .references(() => exercises.id, { onDelete: "cascade" }),
+  answer: text("answer").notNull(),
+  isCorrect: boolean("is_correct").notNull(),
+  attemptedAt: timestamp("attempted_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+// Relations
+export const lessonsRelations = relations(lessons, ({ many }) => ({
+  exercises: many(exercises),
+  userProgress: many(userProgress),
+}));
+
+export const exercisesRelations = relations(exercises, ({ one, many }) => ({
+  lesson: one(lessons, {
+    fields: [exercises.lessonId],
+    references: [lessons.id],
+  }),
+  userAnswers: many(userAnswers),
+}));
+
+export const userProgressRelations = relations(userProgress, ({ one }) => ({
+  user: one(users, {
+    fields: [userProgress.userId],
+    references: [users.id],
+  }),
+  lesson: one(lessons, {
+    fields: [userProgress.lessonId],
+    references: [lessons.id],
+  }),
+}));
+
+export const userAnswersRelations = relations(userAnswers, ({ one }) => ({
+  user: one(users, {
+    fields: [userAnswers.userId],
+    references: [users.id],
+  }),
+  exercise: one(exercises, {
+    fields: [userAnswers.exerciseId],
+    references: [exercises.id],
+  }),
+}));
+
 export type TodoTableSelectModel = typeof todos.$inferSelect;
 export type TodoTableInsertModel = typeof todos.$inferInsert;
 export type UserTableSelectModel = typeof users.$inferSelect;
 export type UserTableInsertModel = typeof users.$inferInsert;
+export type LessonTableSelectModel = typeof lessons.$inferSelect;
+export type LessonTableInsertModel = typeof lessons.$inferInsert;
+export type ExerciseTableSelectModel = typeof exercises.$inferSelect;
+export type ExerciseTableInsertModel = typeof exercises.$inferInsert;
+export type UserProgressTableSelectModel = typeof userProgress.$inferSelect;
+export type UserProgressTableInsertModel = typeof userProgress.$inferInsert;
+export type UserAnswerTableSelectModel = typeof userAnswers.$inferSelect;
+export type UserAnswerTableInsertModel = typeof userAnswers.$inferInsert;
