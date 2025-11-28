@@ -313,9 +313,12 @@ export function ExerciseSpeaking({
         </div>
       )}
 
-      {/* Info Message */}
+      {/* Info Message - suppressHydrationWarning to avoid mismatch between server and client */}
       {!speechSupported && (
-        <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-sm text-yellow-400">
+        <div
+          className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-sm text-yellow-400"
+          suppressHydrationWarning
+        >
           <p className="font-semibold mb-2">Navegador não suportado:</p>
           <p>
             O reconhecimento de voz funciona melhor no Chrome, Edge ou Safari.
@@ -325,7 +328,10 @@ export function ExerciseSpeaking({
       )}
 
       {speechSupported && !recognizedText && !isRecording && (
-        <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm text-blue-400">
+        <div
+          className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm text-blue-400"
+          suppressHydrationWarning
+        >
           <p className="font-semibold mb-2">Como usar:</p>
           <p>
             1. Clique no botão do microfone para começar a gravar
