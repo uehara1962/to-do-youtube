@@ -24,7 +24,8 @@ export const Header = () => {
     { href: "/gallery", label: "Galeria" },
     { href: "/dashboard", label: "Dashboard" },
     { href: "/cloudinary", label: "Cloudinary" },
-    { href: "/blog/newBlog", label: "New Blog" },
+    { href: "/blog", label: "Blog" },
+    { href: "/blog/new", label: "Novo Post" },
   ];
 
   // Add auth-related items based on session status

@@ -8,9 +8,10 @@ export const metadata = {
   title: "Galeria de Imagens - Home",
   description: "Galeria de imagens da pasta Home do Cloudinary",
 };
+const folder = "blog";
 
 async function GalleryContent() {
-  const result = await listImagesAction("todos", 100);
+  const result = await listImagesAction(folder, 100);
   
   trackServerEvent("gallery_page_viewed", {
     page: "gallery",
@@ -31,7 +32,7 @@ async function GalleryContent() {
     );
   }
 
-  return <Gallery images={result.images} total={result.total} />;
+  return <Gallery images={result.images} total={result.total} folder={folder} />;
 }
 
 export default function GalleryPage() {
@@ -40,7 +41,7 @@ export default function GalleryPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Galeria de Imagens</h1>
         <p className="text-gray-500">
-          Imagens da pasta &quot;Home&quot; do Cloudinary
+          Imagens da pasta &quot;{folder}&quot; do Cloudinary
         </p>
       </div>
 

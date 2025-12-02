@@ -40,7 +40,7 @@ export default function NewBlogPage() {
         <Label className="pb-2">Imagem</Label>
         <ImageUpload
           onUploadComplete={handleImageUpload}
-          folder="todos"
+          folder="blog"
         />
       </div>
 

@@ -170,6 +170,57 @@ export const userAnswers = pgTable("user_answers", {
     .notNull(),
 });
 
+// Tabela de posts do blog
+export const posts = pgTable("posts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  imageUrl: text("image_url"),
+  videoUrl: text("video_url"),
+  mediaType: text("media_type").notNull().default("text"), // "text", "image", "video", "image_text", "video_text"
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+// Tabela de curtidas nos posts
+export const postLikes = pgTable("post_likes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  postId: uuid("post_id")
+    .notNull()
+    .references(() => posts.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+// Tabela de comentários nos posts
+export const postComments = pgTable("post_comments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  postId: uuid("post_id")
+    .notNull()
+    .references(() => posts.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
 // Relations
 export const lessonsRelations = relations(lessons, ({ many }) => ({
   exercises: many(exercises),
@@ -206,6 +257,38 @@ export const userAnswersRelations = relations(userAnswers, ({ one }) => ({
   }),
 }));
 
+// Relations para posts
+export const postsRelations = relations(posts, ({ one, many }) => ({
+  user: one(users, {
+    fields: [posts.userId],
+    references: [users.id],
+  }),
+  likes: many(postLikes),
+  comments: many(postComments),
+}));
+
+export const postLikesRelations = relations(postLikes, ({ one }) => ({
+  post: one(posts, {
+    fields: [postLikes.postId],
+    references: [posts.id],
+  }),
+  user: one(users, {
+    fields: [postLikes.userId],
+    references: [users.id],
+  }),
+}));
+
+export const postCommentsRelations = relations(postComments, ({ one }) => ({
+  post: one(posts, {
+    fields: [postComments.postId],
+    references: [posts.id],
+  }),
+  user: one(users, {
+    fields: [postComments.userId],
+    references: [users.id],
+  }),
+}));
+
 export type TodoTableSelectModel = typeof todos.$inferSelect;
 export type TodoTableInsertModel = typeof todos.$inferInsert;
 export type UserTableSelectModel = typeof users.$inferSelect;
@@ -218,3 +301,9 @@ export type UserProgressTableSelectModel = typeof userProgress.$inferSelect;
 export type UserProgressTableInsertModel = typeof userProgress.$inferInsert;
 export type UserAnswerTableSelectModel = typeof userAnswers.$inferSelect;
 export type UserAnswerTableInsertModel = typeof userAnswers.$inferInsert;
+export type PostTableSelectModel = typeof posts.$inferSelect;
+export type PostTableInsertModel = typeof posts.$inferInsert;
+export type PostLikeTableSelectModel = typeof postLikes.$inferSelect;
+export type PostLikeTableInsertModel = typeof postLikes.$inferInsert;
+export type PostCommentTableSelectModel = typeof postComments.$inferSelect;
+export type PostCommentTableInsertModel = typeof postComments.$inferInsert;

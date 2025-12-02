@@ -1,18 +1,17 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Image from "next/image";
 import {
-  uploadImageAction,
-  type UploadImageResult,
-} from "@/actions/upload/upload-image-action";
+  uploadVideoAction,
+  type UploadVideoResult,
+} from "@/actions/upload/upload-video-action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Upload, X, Loader2 } from "lucide-react";
+import { Upload, X, Loader2, Video } from "lucide-react";
 
-interface ImageUploadProps {
-  onUploadComplete?: (result: UploadImageResult) => void;
+interface VideoUploadProps {
+  onUploadComplete?: (result: UploadVideoResult) => void;
   onUploadError?: (error: string) => void;
   folder?: string;
   maxSize?: number; // em bytes
@@ -20,14 +19,14 @@ interface ImageUploadProps {
   disabled?: boolean;
 }
 
-export function ImageUpload({
+export function VideoUpload({
   onUploadComplete,
   onUploadError,
   folder,
-  maxSize = 10 * 1024 * 1024, // 10MB padrão
-  accept = "image/*",
+  maxSize = 100 * 1024 * 1024, // 100MB padrão
+  accept = "video/*",
   disabled = false,
-}: ImageUploadProps) {
+}: VideoUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -36,8 +35,15 @@ export function ImageUpload({
   // Validar arquivo antes de fazer upload
   const validateFile = (file: File): string | null => {
     // Verificar tipo
-    if (!file.type.startsWith("image/")) {
-      return "Arquivo deve ser uma imagem";
+    if (!file.type.startsWith("video/")) {
+      return "Arquivo deve ser um vídeo";
+    }
+
+    // Verificar formato
+    const allowedFormats = ["mp4", "webm", "mov"];
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+    if (!fileExtension || !allowedFormats.includes(fileExtension)) {
+      return `Formato não suportado. Use: ${allowedFormats.join(", ")}`;
     }
 
     // Verificar tamanho
@@ -76,16 +82,16 @@ export function ImageUpload({
 
     setIsUploading(true);
     const formData = new FormData();
-    formData.append("image", selectedFile);
+    formData.append("video", selectedFile);
 
     try {
-      const result = await uploadImageAction(formData, folder);
+      const result = await uploadVideoAction(formData, folder);
 
       if ("error" in result) {
         toast.error(result.error);
         onUploadError?.(result.error);
       } else {
-        toast.success("Imagem enviada com sucesso!");
+        toast.success("Vídeo enviado com sucesso!");
         onUploadComplete?.(result);
         // Limpar seleção
         setSelectedFile(null);
@@ -115,29 +121,16 @@ export function ImageUpload({
 
   return (
     <div className="space-y-4">
-      {/* Input de arquivo customizado */}
+      {/* Input de arquivo */}
       <div className="flex items-center gap-4">
-        <div className="relative flex-1">
-          <Input
-            ref={fileInputRef}
-            type="file"
-            accept={accept}
-            onChange={handleFileSelect}
-            disabled={disabled || isUploading}
-            className="sr-only"
-            id="file-input"
-          />
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={disabled || isUploading}
-            className="w-full justify-start"
-          >
-            <Upload className="mr-2 h-4 w-4" />
-            {selectedFile ? selectedFile.name : "Escolher arquivo"}
-          </Button>
-        </div>
+        <Input
+          ref={fileInputRef}
+          type="file"
+          accept={accept}
+          onChange={handleFileSelect}
+          disabled={disabled || isUploading}
+          className="cursor-pointer"
+        />
         {selectedFile && (
           <Button
             type="button"
@@ -151,19 +144,17 @@ export function ImageUpload({
         )}
       </div>
 
-      {/* Preview da imagem */}
+      {/* Preview do vídeo */}
       {preview && (
-        <div className="relative w-full h-48">
-          <Image
+        <div className="relative">
+          <video
             src={preview}
-            alt="Preview"
-            fill
-            className="object-cover rounded-lg border"
-            unoptimized
+            controls
+            className="w-full h-48 object-cover rounded-lg border"
           />
           {selectedFile && (
             <div className="mt-2 text-sm text-gray-500">
-              {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)
+              {selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)
             </div>
           )}
         </div>
@@ -185,7 +176,7 @@ export function ImageUpload({
           ) : (
             <>
               <Upload className="mr-2 h-4 w-4" />
-              Enviar Imagem
+              Enviar Vídeo
             </>
           )}
         </Button>
@@ -193,3 +184,4 @@ export function ImageUpload({
     </div>
   );
 }
+

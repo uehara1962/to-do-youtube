@@ -11,30 +11,31 @@ cloudinary.config({
 });
 
 // Tipos de retorno
-export type UploadImageResult = {
+export type UploadVideoResult = {
   url: string;
   publicId: string;
-  width: number;
-  height: number;
   format: string;
   bytes: number;
+  duration?: number;
+  width?: number;
+  height?: number;
 };
 
-export type UploadImageError = {
+export type UploadVideoError = {
   error: string;
 };
 
 /**
- * Server Action para fazer upload de imagem para o Cloudinary
+ * Server Action para fazer upload de vídeo para o Cloudinary
  *
- * @param formData - FormData contendo o arquivo de imagem
- * @param folder - (Opcional) Pasta no Cloudinary para organizar as imagens
- * @returns URL da imagem e informações adicionais
+ * @param formData - FormData contendo o arquivo de vídeo
+ * @param folder - (Opcional) Pasta no Cloudinary para organizar os vídeos
+ * @returns URL do vídeo e informações adicionais
  */
-export async function uploadImageAction(
+export async function uploadVideoAction(
   formData: FormData,
   folder?: string
-): Promise<UploadImageResult | UploadImageError> {
+): Promise<UploadVideoResult | UploadVideoError> {
   try {
     // 1. Verificar autenticação
     const user = await getCurrentUser();
@@ -43,34 +44,41 @@ export async function uploadImageAction(
     }
 
     // 2. Obter arquivo do FormData
-    const file = formData.get("image") as File;
-
-    console.log("file:", file);
+    const file = formData.get("video") as File;
     if (!file) {
       return { error: "Nenhum arquivo enviado" };
     }
 
     // 3. Validar tipo de arquivo
-    if (!file.type.startsWith("image/")) {
-      return { error: "Arquivo deve ser uma imagem" };
+    if (!file.type.startsWith("video/")) {
+      return { error: "Arquivo deve ser um vídeo" };
     }
 
-    // 4. Validar tamanho (máximo 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    // 4. Validar tamanho (máximo 100MB)
+    const maxSize = 100 * 1024 * 1024; // 100MB
     if (file.size > maxSize) {
-      return { error: "Arquivo muito grande. Máximo: 10MB" };
+      return { error: "Arquivo muito grande. Máximo: 100MB" };
     }
 
-    // 5. Converter File para Buffer
+    // 5. Validar formato
+    const allowedFormats = ["mp4", "webm", "mov"];
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+    if (!fileExtension || !allowedFormats.includes(fileExtension)) {
+      return {
+        error: `Formato não suportado. Use: ${allowedFormats.join(", ")}`,
+      };
+    }
+
+    // 6. Converter File para Buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // 6. Fazer upload para Cloudinary
+    // 7. Fazer upload para Cloudinary
     return new Promise((resolve, reject) => {
       const uploadOptions = {
-        folder: folder || `uploads/${user.id}`,
-        resource_type: "auto" as const, // Detecta automaticamente se é imagem, vídeo, etc.
-        allowed_formats: ["jpg", "jpeg", "png", "gif", "webp"],
+        folder: folder || `uploads/videos/${user.id}`,
+        resource_type: "video" as const,
+        allowed_formats: allowedFormats,
         transformation: [
           {
             quality: "auto",
@@ -83,17 +91,18 @@ export async function uploadImageAction(
         .upload_stream(uploadOptions, (error, result) => {
           if (error) {
             console.error("Cloudinary upload error:", error);
-            reject({ error: "Erro ao fazer upload da imagem" });
+            reject({ error: "Erro ao fazer upload do vídeo" });
           } else if (!result) {
             reject({ error: "Upload concluído mas sem resultado" });
           } else {
             resolve({
               url: result.secure_url,
               publicId: result.public_id,
-              width: result.width || 0,
-              height: result.height || 0,
               format: result.format || "",
               bytes: result.bytes || 0,
+              duration: result.duration,
+              width: result.width,
+              height: result.height,
             });
           }
         })
@@ -111,11 +120,11 @@ export async function uploadImageAction(
 }
 
 /**
- * Server Action para deletar imagem do Cloudinary
+ * Server Action para deletar vídeo do Cloudinary
  *
- * @param publicId - Public ID da imagem no Cloudinary
+ * @param publicId - Public ID do vídeo no Cloudinary
  */
-export async function deleteImageAction(
+export async function deleteVideoAction(
   publicId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
@@ -124,21 +133,23 @@ export async function deleteImageAction(
       return { success: false, error: "Usuário não autenticado" };
     }
 
-    const result = await cloudinary.uploader.destroy(publicId);
+    const result = await cloudinary.uploader.destroy(publicId, {
+      resource_type: "video",
+    });
 
     if (result.result === "ok") {
       return { success: true };
     } else {
-      return { success: false, error: "Erro ao deletar imagem" };
+      return { success: false, error: "Erro ao deletar vídeo" };
     }
   } catch (error) {
-    console.error("Delete image error:", error);
+    console.error("Delete video error:", error);
     return {
       success: false,
       error:
         error instanceof Error
           ? error.message
-          : "Erro desconhecido ao deletar imagem",
+          : "Erro desconhecido ao deletar vídeo",
     };
   }
 }

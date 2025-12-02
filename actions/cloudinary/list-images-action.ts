@@ -32,6 +32,28 @@ export type ListImagesError = {
   error: string;
 };
 
+// Tipo para as opções da API de recursos do Cloudinary
+interface CloudinaryResourcesOptions {
+  type: "upload";
+  prefix: string;
+  max_results: number;
+  sort_by: Array<{ created_at: "desc" | "asc" }>;
+  next_cursor?: string;
+}
+
+// Tipo para um recurso retornado pela API do Cloudinary
+interface CloudinaryResource {
+  public_id: string;
+  url: string;
+  secure_url: string;
+  width?: number;
+  height?: number;
+  format?: string;
+  bytes?: number;
+  created_at?: string;
+  folder?: string;
+}
+
 /**
  * Server Action para listar imagens de uma pasta específica no Cloudinary
  *
@@ -47,7 +69,7 @@ export async function listImagesAction(
 ): Promise<ListImagesResult | ListImagesError> {
   try {
     // Buscar recursos na pasta especificada usando api.resources
-    const options: any = {
+    const options: CloudinaryResourcesOptions = {
       type: "upload",
       prefix: `${folder}/`,
       max_results: maxResults,
@@ -61,7 +83,9 @@ export async function listImagesAction(
     const result = await cloudinary.api.resources(options);
 
     // Transformar os resultados em formato mais simples
-    const images: GalleryImage[] = (result.resources || []).map((resource: any) => ({
+    const images: GalleryImage[] = (
+      (result.resources as CloudinaryResource[]) || []
+    ).map((resource) => ({
       publicId: resource.public_id,
       url: resource.url,
       secureUrl: resource.secure_url,
@@ -135,4 +159,3 @@ export async function getAllImagesFromFolderAction(
     };
   }
 }
-
