@@ -3,7 +3,9 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db/drizzle";
 import * as schema from "@/db/drizzle/schema";
 import { nextCookies } from "better-auth/next-js";
-import { sendResetPasswordEmail } from "./email";
+import { twoFactor } from "better-auth/plugins";
+import { sendResetPasswordEmail, sendTwoFactorCode } from "./email";
+import { eq } from "drizzle-orm";
 
 // Get base URL for server-side
 // Priority: BETTER_AUTH_URL > VERCEL_URL > localhost
@@ -21,6 +23,7 @@ export const auth = betterAuth({
       session: schema.session,
       account: schema.account,
       verification: schema.verification,
+      twoFactor: schema.twoFactor,
     },
   }),
   emailAndPassword: {
@@ -54,7 +57,39 @@ export const auth = betterAuth({
     "https://carlosuehara.com.br",
     // Adicione outros domínios confiáveis aqui
   ],
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    twoFactor({
+      otpOptions: {
+        async sendOTP({ user, otp }) {
+          // Armazenar código na tabela verification com expiração de 10 minutos
+          const expiresAt = new Date();
+          expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+
+          // Deletar códigos anteriores do mesmo usuário
+          await db
+            .delete(schema.verification)
+            .where(eq(schema.verification.identifier, user.email));
+
+          // Inserir novo código
+          await db.insert(schema.verification).values({
+            identifier: user.email,
+            value: otp,
+            expiresAt: expiresAt,
+          });
+
+          console.log("=== BETTER AUTH GEROU CÓDIGO ===");
+          console.log("Email:", user.email);
+          console.log("Código:", otp);
+          console.log("Expira em:", expiresAt);
+          console.log("================================");
+
+          // Enviar código por email
+          await sendTwoFactorCode(user.email, otp);
+        },
+      },
+    }),
+  ],
 });
 
 export type Session = typeof auth.$Infer.Session;

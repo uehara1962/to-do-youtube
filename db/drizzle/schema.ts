@@ -76,6 +76,24 @@ export const verification = pgTable("verification", {
     .notNull(),
 });
 
+// Tabela de autenticação de dois fatores
+export const twoFactor = pgTable("twoFactor", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" })
+    .unique(),
+  secret: text("secret"),
+  backupCodes: jsonb("backup_codes"), // Array de códigos de backup
+  enabled: boolean("enabled").default(false).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
 // Tabela de todos (atualizada com userId)
 export const todos = pgTable("todos", {
   id: uuid("id").primaryKey().defaultRandom(),

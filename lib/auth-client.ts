@@ -1,4 +1,5 @@
 import { createAuthClient } from "better-auth/react";
+import { twoFactorClient } from "better-auth/client/plugins";
 
 // Get base URL for client-side
 // In production, use NEXT_PUBLIC_BETTER_AUTH_URL or detect from window.location
@@ -24,6 +25,15 @@ const getBaseUrl = () => {
 // The baseURL will be resolved when the client is used in the browser
 export const authClient = createAuthClient({
   baseURL: getBaseUrl(),
+  plugins: [
+    twoFactorClient({
+      onTwoFactorRedirect: () => {
+        if (typeof window !== "undefined") {
+          window.location.href = "/verify-2fa";
+        }
+      },
+    }),
+  ],
 });
 
 export const { signIn, signUp, signOut, useSession } = authClient;
