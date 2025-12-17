@@ -26,11 +26,16 @@ export const Header = () => {
     { href: "/cloudinary", label: "Cloudinary" },
     { href: "/blog", label: "Blog" },
     { href: "/blog/new", label: "Novo Post" },
+    { href: "/d3-examples", label: "D3.js" },
+    { href: "/d3-examples2", label: "D3.js Examples 2" },
+    { href: "/d3-teste", label: "D3.js Teste" },
   ];
 
   // Add auth-related items based on session status
   const menuItems = [
     ...baseMenuItems,
+    // Show Profile when logged in
+    ...(!isPending && session ? [{ href: "/profile", label: "Perfil" }] : []),
     // Show Login/Signup only when NOT logged in
     ...(!isPending && !session
       ? [

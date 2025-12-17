@@ -22,7 +22,7 @@ export default async function Home() {
   const user = await getCurrentUser();
 
   console.log("home page user:", user);
-  if (!user) {
+  if (!user) { 
     redirect("/login");
   }
 

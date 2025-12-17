@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 
 export function proxy(request: NextRequest) {
   const sessionCookie = request.cookies.get("better-auth.session_token");
-  console.log("sessionCookie:", sessionCookie);
+  // console.log("sessionCookie:", sessionCookie);
 
   // Rotas protegidas
   const protectedRoutes = ["/dashboard", "/profile"];
@@ -12,7 +12,7 @@ export function proxy(request: NextRequest) {
     request.nextUrl.pathname.startsWith(route)
   );
 
-  console.log("isProtectedRoute:", isProtectedRoute);
+  // console.log("isProtectedRoute:", isProtectedRoute);
 
   // Redirecionar se não autenticado em rota protegida
   if (isProtectedRoute && !sessionCookie) {
